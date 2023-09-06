@@ -224,7 +224,7 @@ impl UiStateToken {
             impl ::dip::bevy::app::Plugin for UiStatePlugin {
                 fn build(&self, app: &mut App) {
                     use ::dip::bevy::ecs::{
-                        schedule::ParallelSystemDescriptorCoercion,
+                        schedule::IntoSystemDescriptor,
                         system::IntoSystem,
                     };
 

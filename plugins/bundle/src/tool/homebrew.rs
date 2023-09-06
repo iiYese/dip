@@ -4,6 +4,7 @@ use bevy::{
     ecs::{event::EventReader, system::Res},
 };
 use cmd_lib::spawn_with_output;
+use dip_utils::DipRes;
 use std::{
     fs::File,
     io::{BufRead, BufReader, Write},
@@ -24,7 +25,7 @@ impl Plugin for HomebrewPlugin {
 
 // Systems
 
-fn install(mut events: EventReader<InstallTools>, config: Res<BundleConfig>) {
+fn install(mut events: EventReader<InstallTools>, config: Res<DipRes<BundleConfig>>) {
     events.iter().for_each(|_e| {
         let brew = Homebrew::new(config.clone());
         let action = format!("Install {}", &Homebrew::name());
@@ -52,7 +53,7 @@ fn install(mut events: EventReader<InstallTools>, config: Res<BundleConfig>) {
     });
 }
 
-fn apply(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
+fn apply(mut events: EventReader<ApplyBundle>, config: Res<DipRes<BundleConfig>>) {
     events.iter().for_each(|_e| {
         let brew = Homebrew::new(config.clone());
         let action = format!("Apply {} bundle", &Homebrew::name());

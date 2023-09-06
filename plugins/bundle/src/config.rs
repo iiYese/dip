@@ -1,14 +1,16 @@
 use anyhow::{Context, Result};
 use bevy::{
     app::{App, Plugin},
-    ecs::system::ResMut,
+    ecs::system::{ResMut, Resource},
     log,
 };
 use config::{
     builder::{ConfigBuilder, DefaultState},
     File,
 };
+
 use dip_core::{config::ConfigPlugin, prelude::ConfigStartupStage};
+use dip_utils::DipRes;
 use reqwest::Url;
 use serde::{de, Deserialize, Deserializer};
 use std::{fs, path::PathBuf};
@@ -24,11 +26,11 @@ impl Plugin for BundleConfigPlugin {
     }
 }
 
-fn add_user_config(mut builder: ResMut<ConfigBuilder<DefaultState>>) {
+fn add_user_config(mut builder: ResMut<DipRes<ConfigBuilder<DefaultState>>>) {
     let config_file_path = BundleConfig::config_file_path();
 
     if config_file_path.is_file() {
-        *builder = builder
+        **builder = builder
             .clone()
             .add_source(File::with_name(&config_file_path.display().to_string()));
     }
@@ -48,12 +50,12 @@ impl Config {
 
     pub fn ensure_dir(p: &PathBuf) {
         if !&p.is_dir() {
-            fs::create_dir_all(&p).unwrap();
+            fs::create_dir_all(p).unwrap();
         }
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Resource)]
 /// Dip configuration regarding to bundle feature.
 pub struct BundleConfig {
     /// URL of remote repository
@@ -75,9 +77,7 @@ pub struct BundleConfig {
 
 impl BundleConfig {
     pub fn config_file_path() -> PathBuf {
-        let p = Config::config_dir().join("bundle.toml");
-
-        p
+        Config::config_dir().join("bundle.toml")
     }
 
     pub fn bundle_root(&self) -> PathBuf {
@@ -148,7 +148,7 @@ impl ConfigParser {
         }
     }
 
-    fn to_path(value: &String) -> Result<PathBuf> {
+    fn to_path(value: &str) -> Result<PathBuf> {
         let p = value
             .replace(
                 "$HOME",

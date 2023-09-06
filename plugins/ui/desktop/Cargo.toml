@@ -27,7 +27,8 @@ serde_json.workspace = true
 serde_repr.workspace = true
 tokio.workspace = true
 webbrowser = "0.7"
-wry = "0.19"
+wry = "0.31"
+dip_utils.workspace = true
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-foundation = "0.9"

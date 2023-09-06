@@ -5,7 +5,7 @@ use config::{
 use dip::{
     bevy::{
         app::{App, Plugin},
-        ecs::{schedule::ParallelSystemDescriptorCoercion, system::ResMut},
+        ecs::{schedule::IntoSystemDescriptor, system::ResMut},
     },
     core::config::{build_config, ConfigPlugin as ConfigPluginRaw},
 };

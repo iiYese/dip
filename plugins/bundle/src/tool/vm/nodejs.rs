@@ -8,6 +8,7 @@ use bevy::{
     ecs::{event::EventReader, system::Res},
 };
 use dip_macro::Installer;
+use dip_utils::DipRes;
 use std::{fs, io::Write, os::unix::fs::PermissionsExt};
 
 pub struct NodeJSPlugin;
@@ -19,7 +20,7 @@ impl Plugin for NodeJSPlugin {
     }
 }
 
-fn clean(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
+fn clean(mut events: EventReader<ApplyBundle>, config: Res<DipRes<BundleConfig>>) {
     events.iter().for_each(|_e| {
         let vm = NodeJS::new(config.clone());
         let action = format!("Clean {}", &NodeJS::name());
@@ -33,7 +34,7 @@ fn clean(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
     });
 }
 
-fn apply(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
+fn apply(mut events: EventReader<ApplyBundle>, config: Res<DipRes<BundleConfig>>) {
     events.iter().for_each(|_e| {
         let vm = NodeJS::new(config.clone());
         let action = format!("Apply {}", &NodeJS::name());

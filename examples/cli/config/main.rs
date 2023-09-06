@@ -21,7 +21,7 @@ fn add_custom_sources(mut builder: ResMut<ConfigBuilder<DefaultState>>) {
         .add_source(File::with_name("examples/cli/config/config/development"));
 }
 
-fn log_config(config: Res<Config>) {
+fn log_config(config: Res<DipRes<Config>>) {
     println!("{:#?}", *config);
 }
 

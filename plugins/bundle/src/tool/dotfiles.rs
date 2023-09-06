@@ -3,6 +3,7 @@ use bevy::{
     app::{App, Plugin},
     ecs::{event::EventReader, system::Res},
 };
+use dip_utils::DipRes;
 use pathdiff::diff_paths;
 use std::{
     fs::{self, DirEntry},
@@ -24,7 +25,7 @@ impl Plugin for DotfilesPlugin {
 
 // Systems
 
-fn apply(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
+fn apply(mut events: EventReader<ApplyBundle>, config: Res<DipRes<BundleConfig>>) {
     events.iter().for_each(|_e| {
         let dotfiles = Dotfiles::new(config.clone());
         let action = format!("Apply {}", &Dotfiles::name());
@@ -44,7 +45,7 @@ fn apply(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
     });
 }
 
-fn clean(mut events: EventReader<CleanBundle>, config: Res<BundleConfig>) {
+fn clean(mut events: EventReader<CleanBundle>, config: Res<DipRes<BundleConfig>>) {
     events.iter().for_each(|_e| {
         let dotfiles = Dotfiles::new(config.clone());
         let action = format!("Apply {}", &Dotfiles::name());
@@ -126,6 +127,7 @@ struct Symlink {
 }
 
 impl Symlink {
+    #[allow(clippy::if_same_then_else)]
     fn apply(&self) {
         if self.link.is_symlink() {
             // println!(

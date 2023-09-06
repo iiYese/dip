@@ -9,7 +9,7 @@ use dip::{
         app::{App, Plugin},
         ecs::{
             event::{EventReader, EventWriter},
-            schedule::ParallelSystemDescriptorCoercion,
+            schedule::IntoSystemDescriptor,
             system::ResMut,
         },
     },

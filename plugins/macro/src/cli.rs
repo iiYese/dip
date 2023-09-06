@@ -98,6 +98,8 @@ impl CliToken {
                 render_mode: ::dip::cli::RenderMode,
             }
 
+            impl<T: Send + Sync + 'static> ::bevy::ecs::system::Resource for CliPlugin<T> {}
+
             impl<AsyncAction> CliPlugin<AsyncAction> {
                 pub fn oneshot() -> Self {
                     Self {
@@ -128,7 +130,7 @@ impl CliToken {
                 fn build(&self, app: &mut ::dip::bevy::app::App) {
                     use ::clap::Parser;
                     use ::dip::bevy::ecs::{
-                        schedule::ParallelSystemDescriptorCoercion,
+                        schedule::IntoSystemDescriptor,
                         system::IntoSystem,
                     };
 

@@ -4,6 +4,7 @@ use bevy::{
     ecs::{event::EventReader, system::Res},
 };
 use cmd_lib::spawn_with_output;
+use dip_utils::DipRes;
 use std::{
     io::{BufRead, BufReader},
     path::PathBuf,
@@ -18,7 +19,7 @@ impl Plugin for ScriptPlugin {
     }
 }
 
-fn pre_script(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
+fn pre_script(mut events: EventReader<ApplyBundle>, config: Res<DipRes<BundleConfig>>) {
     events.iter().for_each(|_e| {
         let script = Script::pre(config.clone());
         let action = "Pre script";
@@ -40,7 +41,7 @@ fn pre_script(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
     });
 }
 
-fn post_script(mut events: EventReader<ApplyBundle>, config: Res<BundleConfig>) {
+fn post_script(mut events: EventReader<ApplyBundle>, config: Res<DipRes<BundleConfig>>) {
     events.iter().for_each(|_e| {
         let script = Script::post(config.clone());
         let action = "Post script";

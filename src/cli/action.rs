@@ -1,7 +1,7 @@
 // mod build;
 
 // pub use build::*;
-
+use bevy::ecs::system::Resource;
 use dip::cli::{CliPlugin, SubcommandPlugin};
 
 #[derive(CliPlugin, clap::Parser)]
@@ -11,7 +11,7 @@ struct Cli {
     action: Action,
 }
 
-#[derive(SubcommandPlugin, clap::Subcommand, Clone, Debug)]
+#[derive(SubcommandPlugin, clap::Subcommand, Clone, Debug, Resource)]
 pub enum Action {
     Build(BuildArgs),
 

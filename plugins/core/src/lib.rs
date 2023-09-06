@@ -6,6 +6,11 @@ pub mod ui_state;
 pub use dip_config as config;
 pub use dip_task as task;
 
+use bevy::{
+    ecs::system::Resource,
+    prelude::{Deref, DerefMut},
+};
+
 pub mod prelude {
     pub use crate::{
         config::{ConfigPlugin, ConfigStartupStage},

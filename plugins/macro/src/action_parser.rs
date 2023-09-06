@@ -252,46 +252,46 @@ impl ActionToken {
         } = self;
 
         let gen = quote! {
-            pub struct #plugin_name;
+                    pub struct #plugin_name;
+        :
+                    impl ::dip::bevy::app::Plugin for #plugin_name {
+                        fn build(&self, app: &mut ::dip::bevy::app::App) {
+                            use ::dip::bevy::ecs::{
+                                schedule::IntoSystemDescriptor,
+                                system::IntoSystem,
+                            };
 
-            impl ::dip::bevy::app::Plugin for #plugin_name {
-                fn build(&self, app: &mut ::dip::bevy::app::App) {
-                    use ::dip::bevy::ecs::{
-                        schedule::ParallelSystemDescriptorCoercion,
-                        system::IntoSystem,
-                    };
-
-                    app
-                        .add_event::<#action_name>()
-                        #(#add_events)*
-                        .add_system_to_stage(::dip::core::schedule::DipStage::Action, #handler_name);
-                }
-            }
-
-            #[derive(Clone, Debug)]
-            pub enum #action_name {
-                #(#enum_variants)*
-            }
-
-            struct #action_creator_name;
-
-            #action_creator_impl
-
-            impl #action_name {
-                #(#action_methods)*
-            }
-
-            pub fn #handler_name(
-                mut events: EventReader<#action_name>,
-                #(#handler_args)*
-            ) {
-                for action in events.iter() {
-                    match action {
-                        #(#handlers)*
+                            app
+                                .add_event::<#action_name>()
+                                #(#add_events)*
+                                .add_system_to_stage(::dip::core::schedule::DipStage::Action, #handler_name);
+                        }
                     }
-                }
-            }
-        };
+
+                    #[derive(Clone, Debug)]
+                    pub enum #action_name {
+                        #(#enum_variants)*
+                    }
+
+                    struct #action_creator_name;
+
+                    #action_creator_impl
+
+                    impl #action_name {
+                        #(#action_methods)*
+                    }
+
+                    pub fn #handler_name(
+                        mut events: EventReader<#action_name>,
+                        #(#handler_args)*
+                    ) {
+                        for action in events.iter() {
+                            match action {
+                                #(#handlers)*
+                            }
+                        }
+                    }
+                };
 
         gen.into()
     }

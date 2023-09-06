@@ -8,9 +8,13 @@ use bevy::{
     ecs::world::WorldCell,
     math::IVec2,
     utils::HashMap,
-    window::{Window as BevyWindow, WindowDescriptor, WindowId, WindowMode},
+    window::{
+        RawHandleWrapper, Window as BevyWindow, WindowDescriptor, WindowId, WindowMode,
+        WindowPosition,
+    },
 };
 use dioxus_core::SchedulerMsg;
+use dip_utils::DipRes;
 use futures_channel::mpsc;
 use raw_window_handle::HasRawWindowHandle;
 use std::{
@@ -92,10 +96,10 @@ impl DioxusWindows {
             .unwrap();
         let proxy = event_loop.create_proxy();
         let dom_tx = world
-            .get_resource::<mpsc::UnboundedSender<SchedulerMsg>>()
+            .get_resource::<DipRes<mpsc::UnboundedSender<SchedulerMsg>>>()
             .unwrap();
         let edit_queue = world
-            .get_resource::<Arc<Mutex<Vec<String>>>>()
+            .get_resource::<DipRes<Arc<Mutex<Vec<String>>>>>()
             .unwrap()
             .clone();
 
@@ -195,21 +199,21 @@ impl DioxusWindows {
                     height,
                     position,
                     scale_factor_override,
+                    monitor,
                     ..
                 } = window_descriptor;
 
-                use bevy::window::WindowPosition::*;
                 match position {
-                    Automatic => { /* Window manager will handle position */ }
-                    Centered(monitor_selection) => {
+                    WindowPosition::Automatic => { /* Window manager will handle position */ }
+                    WindowPosition::Centered => {
                         use bevy::window::MonitorSelection::*;
-                        let maybe_monitor = match monitor_selection {
+                        let maybe_monitor = match monitor {
                             Current => {
                                 log::warn!("Can't select current monitor on window creation!");
                                 None
                             }
                             Primary => event_loop.primary_monitor(),
-                            Number(n) => event_loop.available_monitors().nth(*n),
+                            Index(n) => event_loop.available_monitors().nth(*n),
                         };
 
                         if let Some(monitor) = maybe_monitor {
@@ -231,10 +235,10 @@ impl DioxusWindows {
 
                             tao_window_builder = tao_window_builder.with_position(position);
                         } else {
-                            log::warn!("Couldn't get monitor selected with: {monitor_selection:?}");
+                            log::warn!("Couldn't get monitor selected with: {monitor:?}");
                         }
                     }
-                    At(position) => {
+                    WindowPosition::At(position) => {
                         if let Some(sf) = scale_factor_override {
                             tao_window_builder = tao_window_builder.with_position(
                                 LogicalPosition::new(position[0] as f64, position[1] as f64)
@@ -309,7 +313,10 @@ impl DioxusWindows {
                 .outer_position()
                 .ok()
                 .map(|position| IVec2::new(position.x, position.y)),
-            tao_window.raw_window_handle(),
+            Some(RawHandleWrapper {
+                window_handle: tao_window.raw_window_handle(),
+                display_handle: tao_window.raw_display_handle(),
+            }),
         )
     }
 

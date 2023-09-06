@@ -5,7 +5,9 @@ use bevy::{
     app::{App, Plugin},
     ecs::system::{Commands, Res, ResMut},
 };
+
 use config::{builder::DefaultState, ConfigBuilder};
+use dip_utils::DipRes;
 use serde::Deserialize;
 use std::marker::PhantomData;
 
@@ -27,7 +29,7 @@ where
 {
     fn build(&self, app: &mut App) {
         app.add_plugin(ConfigSchedulePlugin)
-            .insert_resource(Self::builder(&self))
+            .insert_resource(DipRes(Self::builder(self)))
             .add_startup_system_to_stage(ConfigStartupStage::Build, build_config::<Config>);
     }
 }
@@ -88,7 +90,7 @@ impl<Config> ConfigPlugin<Config> {
         let mut env = ::config::Environment::default().separator(self.env_separator);
 
         if let Some(prefix) = &self.env_prefix {
-            env = env.prefix(&prefix);
+            env = env.prefix(prefix);
         }
 
         if self.default_paths {
@@ -125,9 +127,7 @@ impl<Config> ConfigPlugin<Config> {
                     .required(false),
                 )
                 // ./{CARGO_PKG_NAME}
-                .add_source(
-                    ::config::File::with_name(&format!("{name}", name = PKG_NAME)).required(false),
-                )
+                .add_source(::config::File::with_name(PKG_NAME).required(false))
                 .add_source(env);
         }
 
@@ -140,8 +140,8 @@ impl<Config> ConfigPlugin<Config> {
 }
 
 pub fn build_config<Config>(
-    builder: Res<config::builder::ConfigBuilder<config::builder::DefaultState>>,
-    config: Option<ResMut<Config>>,
+    builder: Res<DipRes<config::builder::ConfigBuilder<config::builder::DefaultState>>>,
+    config: Option<ResMut<DipRes<Config>>>,
     mut commands: Commands,
 ) where
     Config: 'static + Send + Sync + Deserialize<'static>,
@@ -154,6 +154,6 @@ pub fn build_config<Config>(
         .expect("Failed to parse config");
 
     if config.is_none() {
-        commands.insert_resource(c);
+        commands.insert_resource(DipRes(c));
     }
 }

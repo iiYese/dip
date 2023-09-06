@@ -6,7 +6,10 @@ use bevy::{
     },
     log::{error, warn},
     math::{UVec2, Vec2},
-    window::{WindowClosed, WindowCommand, WindowMode, WindowScaleFactorChanged, Windows},
+    window::{
+        CursorGrabMode, MonitorSelection, WindowClosed, WindowCommand, WindowMode,
+        WindowScaleFactorChanged, Windows,
+    },
 };
 use wry::application::{
     dpi::{LogicalPosition, LogicalSize, PhysicalPosition},
@@ -75,7 +78,8 @@ pub fn change_window(
                 WindowCommand::SetCursorIcon { icon } => {
                     window.set_cursor_icon(converter::convert_cursor_icon(icon));
                 }
-                WindowCommand::SetCursorLockMode { locked } => {
+                WindowCommand::SetCursorGrabMode { grab_mode } => {
+                    let locked = !matches!(CursorGrabMode::None, grab_mode);
                     window
                         .set_cursor_grab(locked)
                         .unwrap_or_else(|e| error!("Unable to un/grab cursor: {}", e));
@@ -98,18 +102,40 @@ pub fn change_window(
                 WindowCommand::SetMinimized { minimized } => {
                     window.set_minimized(minimized);
                 }
-                WindowCommand::SetPosition { position } => {
+                WindowCommand::SetPosition {
+                    position,
+                    monitor_selection,
+                } => {
                     window.set_outer_position(PhysicalPosition {
                         x: position[0],
                         y: position[1],
                     });
+                    let maybe_monitor = match monitor_selection {
+                        MonitorSelection::Current => window.current_monitor(),
+                        MonitorSelection::Primary => window.primary_monitor(),
+                        MonitorSelection::Index(n) => window.available_monitors().nth(n),
+                    };
+
+                    if let Some(monitor) = maybe_monitor {
+                        let screen_size = monitor.size();
+
+                        let window_size = window.outer_size();
+
+                        window.set_outer_position(PhysicalPosition {
+                            x: screen_size.width.saturating_sub(window_size.width) as f64 / 2.
+                                + monitor.position().x as f64,
+                            y: screen_size.height.saturating_sub(window_size.height) as f64 / 2.
+                                + monitor.position().y as f64,
+                        });
+                    } else {
+                        warn!("Couldn't get monitor selected with: {monitor_selection:?}");
+                    }
                 }
                 WindowCommand::Center(monitor_selection) => {
-                    use bevy::window::MonitorSelection::*;
                     let maybe_monitor = match monitor_selection {
-                        Current => window.current_monitor(),
-                        Primary => window.primary_monitor(),
-                        Number(n) => window.available_monitors().nth(n),
+                        MonitorSelection::Current => window.current_monitor(),
+                        MonitorSelection::Primary => window.primary_monitor(),
+                        MonitorSelection::Index(n) => window.available_monitors().nth(n),
                     };
 
                     if let Some(monitor) = maybe_monitor {

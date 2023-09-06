@@ -1,6 +1,7 @@
 [package]
-name = "dip_config"
+name = "dip_utils"
 version.workspace = true
+authors.workspace = true
 edition.workspace = true
 description.workspace = true
 license.workspace = true
@@ -9,9 +10,7 @@ homepage.workspace = true
 documentation.workspace = true
 keywords.workspace = true
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [dependencies]
 bevy.workspace = true
-config.workspace = true
-dirs.workspace = true
-serde.workspace = true
-dip_utils.workspace = true

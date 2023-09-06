@@ -243,7 +243,7 @@ impl SubcommandToken {
             impl ::dip::bevy::app::Plugin for #plugin_name {
                 fn build(&self, app: &mut ::dip::bevy::app::App) {
                     use ::dip::bevy::ecs::{
-                        schedule::ParallelSystemDescriptorCoercion,
+                        schedule::IntoSystemDescriptor,
                         system::IntoSystem,
                     };
 

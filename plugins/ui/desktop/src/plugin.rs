@@ -13,12 +13,13 @@ use crate::{
 
 use bevy::{
     app::{App, CoreStage, Plugin},
-    ecs::{event::Events, schedule::ParallelSystemDescriptorCoercion, world::World},
+    ecs::{event::Events, schedule::IntoSystemDescriptor, world::World},
     input::InputPlugin,
     window::{CreateWindow, ModifiesWindows, WindowCreated, WindowPlugin, Windows},
 };
 use dioxus_core::{Component as DioxusComponent, SchedulerMsg};
 use dip_core::{schedule::UiSchedulePlugin, task::AsyncActionPool, ui_state::UiStateHandler};
+use dip_utils::DipRes;
 use futures_channel::mpsc as futures_mpsc;
 use std::{fmt::Debug, marker::PhantomData, sync::Arc, sync::Mutex};
 use tokio::{runtime::Runtime, select, sync::mpsc};
@@ -84,11 +85,11 @@ where
             .add_plugin(UiSchedulePlugin)
             .add_plugin(InputPlugin)
             .add_event::<KeyboardEvent>()
-            .insert_resource(async_action)
-            .insert_resource(runtime)
-            .insert_resource(vdom_scheduler_tx)
-            .insert_resource(ui_state_tx)
-            .insert_resource(edit_queue)
+            .insert_resource(DipRes(async_action))
+            .insert_resource(DipRes(runtime))
+            .insert_resource(DipRes(vdom_scheduler_tx))
+            .insert_resource(DipRes(ui_state_tx))
+            .insert_resource(DipRes(edit_queue))
             .init_non_send_resource::<DioxusWindows>()
             .insert_non_send_resource(settings)
             .insert_non_send_resource(event_loop)

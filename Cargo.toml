@@ -8,6 +8,7 @@ members = [
     "plugins/ui/cli",
     "plugins/ui/desktop",
     "plugins/web3/device",
+    "plugins/utils",
     "examples/todomvc",
 ]
 
@@ -24,8 +25,8 @@ keywords = ["declarative-ui", "ecs", "bevy", "dioxus", "cross-platform"]
 
 [workspace.dependencies]
 anyhow = "1.0"
-bevy = { version = "0.8", default-features = false }
-bevy_ecs = "0.8"
+bevy = { version = "0.9", default-features = false }
+bevy_ecs = "0.9"
 bytes = "1"
 cmd_lib = "1"
 config = "0.13"
@@ -38,6 +39,7 @@ dip_core = { version = "0.2", path = "./plugins/core" }
 dip_device = { version = "0.2", path = "./plugins/web3/device" }
 dip_macro = { version = "0.2", path = "./plugins/macro" }
 dip_task = { version = "0.2", path = "./plugins/task" }
+dip_utils = { version = "0.2", path = "./plugins/utils"}
 dirs = "4.0"
 flate2 = "1.0"
 hex = "0.4"
@@ -79,6 +81,7 @@ dip_core.workspace = true
 dip_desktop = { version = "0.2", path = "./plugins/ui/desktop", optional = true }
 dip_device.workspace = true
 dip_macro.workspace = true
+dip_utils.workspace = true
 dirs.workspace = true
 reqwest.workspace = true
 serde.workspace = true

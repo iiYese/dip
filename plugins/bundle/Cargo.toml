@@ -15,6 +15,7 @@ bevy.workspace = true
 bytes.workspace = true
 dip_core.workspace = true
 dip_macro.workspace = true
+dip_utils.workspace = true
 dirs.workspace = true
 cmd_lib.workspace = true
 config.workspace = true
